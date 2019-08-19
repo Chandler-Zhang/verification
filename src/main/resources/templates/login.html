@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style type="text/css">
+         div{
+             text-align: center;
+         }
+        form{
+            margin-top:10%;
+        }
+    </style>
+</head>
+<body>
+<div >
+    <form  action="login"method="post">
+        <div id="error"></div>
+        账号:<input type="text" name="userName"/><br/>
+        密码:<input type="password" name="password" /><br/>
+        <img id="yzm" src="getVerify.htm"/> <a href="javascript:replace()">换一张</a><br/>
+        验证码<input type="text" name="yzm"/>
+        <input type="button" value="登陆" id="login"/>
+    </form>
+</div>
+</body>
+<script type="text/javascript" src="jquery-1.8.0.js"></script>
+<script type="text/javascript">
+    function replace(){
+        $("#yzm").attr("src","getVerify.htm?t="+ Math.random());
+    }
+    $(function(){
+        $("#login").click(function(){
+            var flags=false;
+            var verification=$("[name='yzm']").val();
+            $.ajax({
+                url:"checkValidate",
+                async:false,
+                type:"get",
+                data:{"verification":verification},
+                dataType:"text",
+                success:function(flag){
+                    if(flag=="-1"){
+                        $("#error").html("验证码已超时,请换个","red");
+                        flags=true;
+                    }else if (flag=="0"){
+                        $("#error").html("验证码错误").css("color","red");
+                        flags=true;
+                    }else{
+                        $("#error").html("登陆成功").css("color","green");
+                    }
+                }
+            });
+            //如果验证失败则不进后面的登陆
+            if(flags){
+                return;
+            }
+        });
+    })
+</script>
+</html>
